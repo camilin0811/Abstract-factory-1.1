@@ -273,6 +273,15 @@ public class AutoRepairGUI extends JFrame {
 
             @Override
             protected void done() {
+                runButton.setEnabled(true);
+                try {
+                    get();
+                } catch (Exception ex) {
+                    Throwable cause = ex.getCause() != null ? ex.getCause() : ex;
+                    showStatus("Unexpected error: " + cause.getMessage(), ERROR);
+                    return;
+                }
+
                 engineLabel.setText(engine.getSpecs());
                 partLabel.setText(String.format("%s ($%.2f)", part.getPartName(), part.getPrice()));
                 faultLabel.setText(result.getProbableFault());
@@ -280,8 +289,13 @@ public class AutoRepairGUI extends JFrame {
                 confidenceBar.setString(result.getConfidencePercentage() + "%");
                 recommendationArea.setText(result.getRecommendation());
 
-                runButton.setEnabled(true);
-                showStatus("Diagnosis for " + plate + " complete.", OK);
+                if (result.getConfidencePercentage() == 0
+                        && (result.getProbableFault().equals("AI not configured")
+                        || result.getProbableFault().startsWith("Error contacting"))) {
+                    showStatus(result.getProbableFault() + " — see Recommendation for details.", ERROR);
+                } else {
+                    showStatus("Diagnosis for " + plate + " complete.", OK);
+                }
             }
         }.execute();
     }
