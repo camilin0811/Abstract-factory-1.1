@@ -13,6 +13,6 @@ public class ElectricVehicleFactory implements VehicleFactory {
 
     @Override
     public DiagnosticAI createDiagnosticAI() {
-        return new ElectricDiagnosticAI();
+        return new GroqDiagnosticAI("electrico");
     }
 }
