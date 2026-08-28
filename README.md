@@ -26,6 +26,7 @@ spare part + diagnostic AI from the same family).
 | Concrete products (gasoline) | `GasolineEngine`, `SparkPlugPart`, `GroqDiagnosticAI("gasoline")` |
 | Concrete products (electric) | `ElectricEngine`, `BatteryCellPart`, `GroqDiagnosticAI("electric")` |
 | Client | `AutoRepairShop` |
+| Front-ends | `AutoRepairGUI` (Swing desktop window), `ConsoleApp` (text console) |
 
 ## The project's AI: Groq
 
@@ -90,39 +91,32 @@ Compile:
 javac -d out src/main/java/com/autoshop/mechanic/*.java
 ```
 
-Run (requires `GROQ_API_KEY` to be set and an internet connection):
+Run the graphical interface (requires `GROQ_API_KEY` to be set and an
+internet connection):
 
 ```bash
 java -cp out com.autoshop.mechanic.Main
 ```
 
-`Main` is an interactive console loop: it asks you to pick a vehicle
-family, type a license plate, and enter symptoms one per line (empty line
-to finish). It then builds the matching `VehicleFactory`, runs the service
-call, and shows the live Groq diagnosis. Type `exit` at any prompt to quit,
-or answer `n` when asked to service another vehicle.
+This opens a Swing desktop window (`AutoRepairGUI`): pick a vehicle type,
+type a license plate, add one or more symptoms, and click **Run AI
+Diagnosis**. The Groq call runs on a background thread, so the window
+stays responsive while it shows "Contacting Groq AI..." and then fills in
+the engine specs, the suggested spare part, and the AI's fault,
+confidence bar, and recommendation.
 
-## Sample session
+### Text console alternative
 
+For a terminal-only workflow (no display available, remote session, etc.),
+run `ConsoleApp` instead:
+
+```bash
+java -cp out com.autoshop.mechanic.ConsoleApp
 ```
-=== AutoAI Repair Shop ===
-Type 'exit' at any prompt to quit.
 
-Vehicle type - [1] Gasoline  [2] Electric  (or 'exit'): 1
-License plate (e.g. ABC-123): ABC-123
-Enter symptoms one per line. Press Enter on an empty line to finish.
-  symptom> difficulty starting
-  symptom> black smoke
-  symptom>
-=== Servicing vehicle ABC-123 ===
-Starting internal combustion engine... vroom!
-Technical specs: 4-cylinder gasoline engine, 1.6L, electronic fuel injection
-Suggested spare part in stock: Iridium spark plug set ($45.90)
-AI diagnosis -> Stuck open fuel injector (confidence: 70%) -> Remove and bench-test the fuel injector(s), replace any that leak, then clear any flood condition and verify proper idle after reinstall.
-
-Service another vehicle? (y/n): n
-Thanks for visiting AutoAI Repair Shop. Goodbye!
-```
+It asks the same questions (vehicle type, plate, symptoms) as plain text
+prompts and prints the diagnosis directly in the terminal. Type `exit` at
+any prompt to quit, or answer `n` when asked to service another vehicle.
 
 > The exact model response may vary between runs because it is a real
 > generative AI, not a fixed result.
