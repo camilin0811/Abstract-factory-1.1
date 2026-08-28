@@ -1,117 +1,116 @@
-# Taller Mecánico AutoIA — Patrón Abstract Factory
+# AutoAI Repair Shop — Abstract Factory Pattern
 
-## Caso de la vida real
+## Real-life case
 
-Un taller mecánico atiende dos familias de vehículos completamente distintas:
-**vehículos a gasolina** y **vehículos eléctricos**. Cada familia necesita su
-propio motor, su propio repuesto crítico y su propio asistente de
-**diagnóstico con IA**, entrenado con las fallas típicas de ese tipo de
-vehículo. El taller nunca debe mezclar piezas de una familia con otra (por
-ejemplo, no se le puede sugerir un juego de bujías a un auto eléctrico).
+An auto repair shop services two completely different vehicle families:
+**gasoline vehicles** and **electric vehicles**. Each family needs its own
+engine, its own critical spare part, and its own **AI diagnostic
+assistant**, tuned to the typical faults of that vehicle type. The shop
+must never mix parts from one family with another (for example, it should
+never suggest a spark plug set for an electric car).
 
-El patrón **Abstract Factory** resuelve esto: el taller (`TallerMecanico`)
-solo conoce la interfaz `VehicleFactory` y, sin importar qué fábrica
-concreta reciba, siempre obtiene un conjunto de productos compatible entre
-sí (motor + repuesto + IA de diagnóstico de la misma familia).
+The **Abstract Factory** pattern solves this: the shop (`AutoRepairShop`)
+only knows the `VehicleFactory` interface, and no matter which concrete
+factory it receives, it always gets a compatible set of products (engine +
+spare part + diagnostic AI from the same family).
 
-## Estructura del patrón
+## Pattern structure
 
-| Rol | Clase / Interfaz |
+| Role | Class / Interface |
 |---|---|
-| Fábrica abstracta | `VehicleFactory` |
-| Fábricas concretas | `GasolineVehicleFactory`, `ElectricVehicleFactory` |
-| Producto abstracto | `Engine` |
-| Producto abstracto | `SparePart` |
-| Producto abstracto | `DiagnosticAI` |
-| Productos concretos (gasolina) | `GasolineEngine`, `SparkPlugPart`, `GroqDiagnosticAI("gasolina")` |
-| Productos concretos (eléctrico) | `ElectricEngine`, `BatteryCellPart`, `GroqDiagnosticAI("electrico")` |
-| Cliente | `TallerMecanico` |
+| Abstract factory | `VehicleFactory` |
+| Concrete factories | `GasolineVehicleFactory`, `ElectricVehicleFactory` |
+| Abstract product | `Engine` |
+| Abstract product | `SparePart` |
+| Abstract product | `DiagnosticAI` |
+| Concrete products (gasoline) | `GasolineEngine`, `SparkPlugPart`, `GroqDiagnosticAI("gasoline")` |
+| Concrete products (electric) | `ElectricEngine`, `BatteryCellPart`, `GroqDiagnosticAI("electric")` |
+| Client | `AutoRepairShop` |
 
-## La IA del proyecto: Groq
+## The project's AI: Groq
 
-`DiagnosticAI` ahora se implementa con **`GroqDiagnosticAI`**, que consulta
-un modelo de lenguaje real a través de la [API de Groq](https://console.groq.com/)
-(compatible con el formato de Chat Completions de OpenAI). El tipo de
-vehículo (`"gasolina"` o `"electrico"`) se inyecta en el prompt del sistema
-para que el modelo razone con el contexto correcto de cada familia de
-productos, y los síntomas reportados por el cliente se envían como prompt
-de usuario.
+`DiagnosticAI` is implemented by **`GroqDiagnosticAI`**, which queries a
+real language model through the [Groq API](https://console.groq.com/)
+(compatible with OpenAI's Chat Completions format). The vehicle type
+(`"gasoline"` or `"electric"`) is injected into the system prompt so the
+model reasons with the right context for each product family, and the
+customer's reported symptoms are sent as the user prompt.
 
-El modelo responde en un formato fijo de 3 líneas (`FALLA`, `CONFIANZA`,
-`RECOMENDACION`), que `GroqDiagnosticAI` parsea con una expresión regular
-para construir el `DiagnosticResult`. Todo el cliente HTTP (`GroqClient`) y
-el manejo de JSON (`JsonUtil`) están escritos a mano con `java.net.http`,
-sin librerías externas, para poder seguir compilando el proyecto solo con
+The model replies in a fixed 3-line format (`FAULT`, `CONFIDENCE`,
+`RECOMMENDATION`), which `GroqDiagnosticAI` parses with a regular
+expression to build the `DiagnosticResult`. The HTTP client (`GroqClient`)
+and the JSON handling (`JsonUtil`) are hand-written with `java.net.http`,
+with no external libraries, so the project keeps compiling with plain
 `javac`.
 
-### Configurar la clave de Groq
+### Setting up the Groq key
 
-1. Crea una cuenta gratuita y genera una clave en https://console.groq.com/keys
-2. Configúrala de una de estas dos formas:
-   - **Variable de entorno** (recomendado):
+1. Create a free account and generate a key at https://console.groq.com/keys
+2. Configure it in one of two ways:
+   - **Environment variable** (recommended):
      ```powershell
-     $env:GROQ_API_KEY = "tu_clave_aqui"
+     $env:GROQ_API_KEY = "your_key_here"
      ```
-   - **Archivo local**: copia `groq.properties.example` como `groq.properties`
-     en la raíz del proyecto y pega tu clave ahí. Este archivo está en
-     `.gitignore`, así que nunca se sube a GitHub.
-3. (Opcional) Puedes cambiar el modelo con la variable de entorno
-   `GROQ_MODEL` (por defecto usa `openai/gpt-oss-120b`, disponible en el
-   free tier de Groq).
+   - **Local file**: copy `groq.properties.example` as `groq.properties` in
+     the project root and paste your key there. This file is in
+     `.gitignore`, so it never gets pushed to GitHub.
+3. (Optional) You can change the model with the `GROQ_MODEL` environment
+   variable (defaults to `openai/gpt-oss-120b`, available on Groq's free
+   tier).
 
-> Si `GROQ_API_KEY` no está configurada, el programa no se cae: cada
-> diagnóstico devuelve un `DiagnosticResult` explicando el error
-> ("IA no configurada"), gracias a que `GroqDiagnosticAI` captura la
-> excepción en vez de propagarla.
+> If `GROQ_API_KEY` is not set, the program does not crash: every diagnosis
+> returns a `DiagnosticResult` explaining the error ("AI not configured"),
+> because `GroqDiagnosticAI` catches the exception instead of propagating
+> it.
 
-### Alternativa offline (sin conexión a internet)
+### Offline alternative (no internet connection)
 
-El proyecto conserva `GasolineDiagnosticAI` y `ElectricDiagnosticAI`, una
-versión simulada (sistema experto basado en reglas, sin llamadas HTTP).
-Gracias a que todas implementan la misma interfaz `DiagnosticAI`, para
-volver a la versión offline solo hay que cambiar una línea en la fábrica
-correspondiente, por ejemplo en `GasolineVehicleFactory`:
+The project keeps `GasolineDiagnosticAI` and `ElectricDiagnosticAI`, a
+simulated version (a rule-based expert system, no HTTP calls). Since all
+of them implement the same `DiagnosticAI` interface, switching back to the
+offline version only requires changing one line in the corresponding
+factory, for example in `GasolineVehicleFactory`:
 
 ```java
-// En vez de:
-return new GroqDiagnosticAI("gasolina");
-// usar:
+// Instead of:
+return new GroqDiagnosticAI("gasoline");
+// use:
 return new GasolineDiagnosticAI();
 ```
 
-Esto es exactamente lo que demuestra el patrón Abstract Factory: el cliente
-(`TallerMecanico`) no cambia ni una línea al intercambiar la implementación
-de la IA.
+This is exactly what the Abstract Factory pattern demonstrates: the client
+(`AutoRepairShop`) does not change a single line when the AI implementation
+is swapped out.
 
-## Cómo ejecutar
+## How to run it
 
-Compilar:
-
-```bash
-javac -d out src/main/java/com/taller/mecanica/*.java
-```
-
-Ejecutar (requiere `GROQ_API_KEY` configurada y conexión a internet):
+Compile:
 
 ```bash
-java -cp out com.taller.mecanica.Main
+javac -d out src/main/java/com/autoshop/mechanic/*.java
 ```
 
-## Ejemplo de salida
+Run (requires `GROQ_API_KEY` to be set and an internet connection):
 
-```
-=== Atendiendo vehiculo ABC-123 ===
-Encendiendo motor de combustión interna... vroom!
-Ficha tecnica: Motor a gasolina 4 cilindros, 1.6L, inyección electrónica
-Repuesto sugerido en stock: Juego de bujías de iridio ($45.90)
-Diagnostico IA -> Inyeccion de combustible defectuosa (confianza: 78%) -> Revisar y limpiar o reemplazar los inyectores y verificar el filtro de aire.
-
-=== Atendiendo vehiculo EV-777 ===
-Activando motor electrico... silencioso y listo.
-Ficha tecnica: Motor electrico sincrono, 150kW, baterias de iones de litio 60kWh
-Repuesto sugerido en stock: Modulo de celdas de bateria de litio ($890.00)
-Diagnostico IA -> Degradacion de la bateria / fallo del BMS (confianza: 78%) -> Realizar diagnostico del BMS y pruebas de carga, inspeccionar conexiones y considerar reemplazo de modulos de bateria o del BMS segun resultados.
+```bash
+java -cp out com.autoshop.mechanic.Main
 ```
 
-> La respuesta exacta del modelo puede variar entre ejecuciones porque es
-> una IA generativa real, no un resultado fijo.
+## Sample output
+
+```
+=== Servicing vehicle ABC-123 ===
+Starting internal combustion engine... vroom!
+Technical specs: 4-cylinder gasoline engine, 1.6L, electronic fuel injection
+Suggested spare part in stock: Iridium spark plug set ($45.90)
+AI diagnosis -> Stuck open fuel injector (confidence: 70%) -> Remove and bench-test the fuel injector(s), replace any that leak, then clear any flood condition and verify proper idle after reinstall.
+
+=== Servicing vehicle EV-777 ===
+Activating electric motor... quiet and ready.
+Technical specs: Synchronous electric motor, 150kW, 60kWh lithium-ion battery pack
+Suggested spare part in stock: Lithium battery cell module ($890.00)
+AI diagnosis -> BMS fault (confidence: 75%) -> Perform a full BMS and high-voltage battery diagnostic, inspect charger and HV connections, and replace the BMS or battery pack if faults are confirmed.
+```
+
+> The exact model response may vary between runs because it is a real
+> generative AI, not a fixed result.

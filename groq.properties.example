@@ -1,6 +1,6 @@
-# Copia este archivo como "groq.properties" (sin .example) en la raiz del
-# proyecto y pega tu clave real. Ese archivo NUNCA se sube a GitHub porque
-# esta en .gitignore.
+# Copy this file as "groq.properties" (without .example) in the project
+# root and paste your real key. That file is NEVER pushed to GitHub
+# because it is listed in .gitignore.
 #
-# Obten tu clave gratis en: https://console.groq.com/keys
-GROQ_API_KEY=tu_clave_de_groq_aqui
+# Get your free key at: https://console.groq.com/keys
+GROQ_API_KEY=your_groq_key_here

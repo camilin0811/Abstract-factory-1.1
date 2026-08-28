@@ -1,4 +1,4 @@
-package com.taller.mecanica;
+package com.autoshop.mechanic;
 
 public class ElectricVehicleFactory implements VehicleFactory {
     @Override
@@ -13,6 +13,6 @@ public class ElectricVehicleFactory implements VehicleFactory {
 
     @Override
     public DiagnosticAI createDiagnosticAI() {
-        return new GroqDiagnosticAI("electrico");
+        return new GroqDiagnosticAI("electric");
     }
 }

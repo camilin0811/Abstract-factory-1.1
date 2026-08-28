@@ -1,8 +1,8 @@
-package com.taller.mecanica;
+package com.autoshop.mechanic;
 
 /**
- * Resultado producido por un DiagnosticAI: la falla más probable,
- * el nivel de confianza calculado y la recomendación para el cliente.
+ * Result produced by a DiagnosticAI: the most likely fault, the computed
+ * confidence level, and the recommendation for the customer.
  */
 public class DiagnosticResult {
     private final String probableFault;
@@ -29,6 +29,6 @@ public class DiagnosticResult {
 
     @Override
     public String toString() {
-        return probableFault + " (confianza: " + confidencePercentage + "%) -> " + recommendation;
+        return probableFault + " (confidence: " + confidencePercentage + "%) -> " + recommendation;
     }
 }

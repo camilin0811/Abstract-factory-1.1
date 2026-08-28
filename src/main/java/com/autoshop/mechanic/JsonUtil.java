@@ -1,11 +1,11 @@
-package com.taller.mecanica;
+package com.autoshop.mechanic;
 
 import java.util.Optional;
 
 /**
- * Utilidades minimas de JSON (sin dependencias externas) usadas para
- * construir el cuerpo de la peticion a Groq y para extraer el campo
- * "content" de la respuesta.
+ * Minimal JSON utilities (no external dependencies) used to build the
+ * request body sent to Groq and to extract the "content" field from
+ * the response.
  */
 final class JsonUtil {
 
@@ -43,9 +43,9 @@ final class JsonUtil {
     }
 
     /**
-     * Busca la primera aparicion de "key":"..." en un JSON y devuelve su
-     * valor ya des-escapado. Suficiente para respuestas simples como las
-     * de la API de Groq, sin necesidad de un parser JSON completo.
+     * Finds the first occurrence of "key":"..." in a JSON string and
+     * returns its already-unescaped value. Good enough for simple
+     * responses like Groq's, without needing a full JSON parser.
      */
     static Optional<String> extractStringField(String json, String key) {
         String marker = "\"" + key + "\":\"";

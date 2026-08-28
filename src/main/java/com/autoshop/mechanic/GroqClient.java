@@ -1,4 +1,4 @@
-package com.taller.mecanica;
+package com.autoshop.mechanic;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -12,9 +12,9 @@ import java.time.Duration;
 import java.util.Properties;
 
 /**
- * Cliente minimo para la API de Groq (compatible con el formato de Chat
- * Completions de OpenAI). No depende de librerias externas: solo usa
- * java.net.http y JsonUtil para construir/leer los mensajes JSON.
+ * Minimal client for the Groq API (compatible with OpenAI's Chat
+ * Completions format). Has no external dependencies: it only uses
+ * java.net.http and JsonUtil to build/read the JSON messages.
  */
 public class GroqClient {
 
@@ -49,14 +49,14 @@ public class GroqClient {
                     return fromFile.trim();
                 }
             } catch (IOException ignored) {
-                // Se reporta como clave faltante mas abajo.
+                // Reported as a missing key below.
             }
         }
 
         throw new IllegalStateException(
-                "No se encontro GROQ_API_KEY. Define la variable de entorno GROQ_API_KEY "
-                        + "o crea un archivo groq.properties (ver groq.properties.example) "
-                        + "con tu clave de https://console.groq.com/keys");
+                "GROQ_API_KEY not found. Set the GROQ_API_KEY environment variable "
+                        + "or create a groq.properties file (see groq.properties.example) "
+                        + "with your key from https://console.groq.com/keys");
     }
 
     public String chat(String systemPrompt, String userPrompt) throws IOException, InterruptedException {
@@ -79,11 +79,11 @@ public class GroqClient {
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
         if (response.statusCode() != 200) {
-            throw new IOException("Groq respondio con codigo " + response.statusCode() + ": " + response.body());
+            throw new IOException("Groq returned status code " + response.statusCode() + ": " + response.body());
         }
 
         return JsonUtil.extractStringField(response.body(), "content")
                 .orElseThrow(() -> new IOException(
-                        "No se pudo leer el campo 'content' en la respuesta de Groq: " + response.body()));
+                        "Could not read the 'content' field in Groq's response: " + response.body()));
     }
 }

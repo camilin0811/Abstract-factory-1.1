@@ -1,9 +1,9 @@
-package com.taller.mecanica;
+package com.autoshop.mechanic;
 
 public class SparkPlugPart implements SparePart {
     @Override
     public String getPartName() {
-        return "Juego de bujías de iridio";
+        return "Iridium spark plug set";
     }
 
     @Override

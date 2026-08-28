@@ -1,9 +1,9 @@
-package com.taller.mecanica;
+package com.autoshop.mechanic;
 
 public class BatteryCellPart implements SparePart {
     @Override
     public String getPartName() {
-        return "Modulo de celdas de bateria de litio";
+        return "Lithium battery cell module";
     }
 
     @Override
