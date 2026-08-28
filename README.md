@@ -96,20 +96,32 @@ Run (requires `GROQ_API_KEY` to be set and an internet connection):
 java -cp out com.autoshop.mechanic.Main
 ```
 
-## Sample output
+`Main` is an interactive console loop: it asks you to pick a vehicle
+family, type a license plate, and enter symptoms one per line (empty line
+to finish). It then builds the matching `VehicleFactory`, runs the service
+call, and shows the live Groq diagnosis. Type `exit` at any prompt to quit,
+or answer `n` when asked to service another vehicle.
+
+## Sample session
 
 ```
+=== AutoAI Repair Shop ===
+Type 'exit' at any prompt to quit.
+
+Vehicle type - [1] Gasoline  [2] Electric  (or 'exit'): 1
+License plate (e.g. ABC-123): ABC-123
+Enter symptoms one per line. Press Enter on an empty line to finish.
+  symptom> difficulty starting
+  symptom> black smoke
+  symptom>
 === Servicing vehicle ABC-123 ===
 Starting internal combustion engine... vroom!
 Technical specs: 4-cylinder gasoline engine, 1.6L, electronic fuel injection
 Suggested spare part in stock: Iridium spark plug set ($45.90)
 AI diagnosis -> Stuck open fuel injector (confidence: 70%) -> Remove and bench-test the fuel injector(s), replace any that leak, then clear any flood condition and verify proper idle after reinstall.
 
-=== Servicing vehicle EV-777 ===
-Activating electric motor... quiet and ready.
-Technical specs: Synchronous electric motor, 150kW, 60kWh lithium-ion battery pack
-Suggested spare part in stock: Lithium battery cell module ($890.00)
-AI diagnosis -> BMS fault (confidence: 75%) -> Perform a full BMS and high-voltage battery diagnostic, inspect charger and HV connections, and replace the BMS or battery pack if faults are confirmed.
+Service another vehicle? (y/n): n
+Thanks for visiting AutoAI Repair Shop. Goodbye!
 ```
 
 > The exact model response may vary between runs because it is a real
