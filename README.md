@@ -44,20 +44,26 @@ and the JSON handling (`JsonUtil`) are hand-written with `java.net.http`,
 with no external libraries, so the project keeps compiling with plain
 `javac`.
 
-### Setting up the Groq key
+### Groq key
 
-1. Create a free account and generate a key at https://console.groq.com/keys
-2. Configure it in one of two ways:
-   - **Environment variable** (recommended):
-     ```powershell
-     $env:GROQ_API_KEY = "your_key_here"
-     ```
-   - **Local file**: copy `groq.properties.example` as `groq.properties` in
-     the project root and paste your key there. This file is in
-     `.gitignore`, so it never gets pushed to GitHub.
-3. (Optional) You can change the model with the `GROQ_MODEL` environment
-   variable (defaults to `openai/gpt-oss-120b`, available on Groq's free
-   tier).
+For grading convenience, this repository already includes a working
+`groq.properties` with a live key, so the project runs immediately after
+cloning — no setup needed. If you'd rather use your own key, generate one
+for free at https://console.groq.com/keys and either overwrite
+`groq.properties` or set the `GROQ_API_KEY` environment variable, which
+always takes priority:
+
+```powershell
+$env:GROQ_API_KEY = "your_key_here"
+```
+
+You can change the model with the `GROQ_MODEL` environment variable
+(defaults to `openai/gpt-oss-120b`, available on Groq's free tier).
+
+> ⚠️ Because this key is committed to a public repository, treat it as
+> disposable: it may be rate-limited, exhausted, or revoked at any time.
+> If it stops working, generate a new one and replace it in
+> `groq.properties`.
 
 > If `GROQ_API_KEY` is not set, the program does not crash: every diagnosis
 > returns a `DiagnosticResult` explaining the error ("AI not configured"),
